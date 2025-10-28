@@ -1,0 +1,90 @@
+docroot $VH_ROOT/html/
+enablegzip 1
+
+errorlog $VH_ROOT/logs/error.log {
+    useserver 1
+    loglevel DEBUG
+    rollingsize 10M
+}
+
+accesslog $VH_ROOT/logs/access.log {
+    useserver 0
+    rollingsize 10M
+    keepdays 30
+    compressarchive 0
+}
+
+index  {
+    useserver 0
+    indexfiles index.php, index.html
+    autoindex 0
+    autoindexuri /_autoindex/default.php
+}
+
+errorpage 404 {
+    url /error404.html
+}
+
+expires  {
+    enableexpires 1
+}
+
+accesscontrol  {
+    allow *
+}
+
+realm SampleProtectedArea {
+
+    userdb  {
+        location conf/vhosts/$VH_NAME/htpasswd
+        maxcachesize 200
+        cachetimeout 60
+    }
+
+    groupdb  {
+        location conf/vhosts/$VH_NAME/htgroup
+        maxcachesize 200
+        cachetimeout 60
+    }
+}
+
+context / {
+    location $DOC_ROOT/
+    allowbrowse 1
+
+    rewrite  {
+        rules rewritefile .htaccess
+        unknownkeywords rewritefile .htaccess
+    }
+}
+
+context /docs/ {
+    location $SERVER_ROOT/docs/
+    allowbrowse 1
+}
+
+context /protected/ {
+    location protected/
+    allowbrowse 1
+    realm SampleProtectedArea
+    authname Protected
+    required user test
+
+    accesscontrol  {
+        allow *
+    }
+}
+
+context /blocked/ {
+    allowbrowse 0
+}
+
+context /cgi-bin/ {
+    type cgi
+    location $VH_ROOT/cgi-bin/
+}
+
+rewrite  {
+    enable 0
+    loglevel 0
+}

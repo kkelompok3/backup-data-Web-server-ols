@@ -1,0 +1,248 @@
+head	1.2;
+access;
+symbols;
+locks
+	root:1.2; strict;
+comment	@# @;
+
+
+1.2
+date	2025.10.21.02.32.34;	author root;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2025.10.21.02.26.34;	author root;	state Exp;
+branches;
+next	;
+
+
+desc
+@/usr/local/lsws/conf/vhosts/Example/vhconf.conf0
+@
+
+
+1.2
+log
+@Update
+@
+text
+@docRoot                   $VH_ROOT/html/
+enableGzip                1
+
+errorlog $VH_ROOT/logs/error.log {
+  useServer               1
+  logLevel                DEBUG
+  rollingSize             10M
+}
+
+accesslog $VH_ROOT/logs/access.log {
+  useServer               0
+  rollingSize             10M
+  keepDays                30
+  compressArchive         0
+}
+
+index  {
+  useServer               0
+  indexFiles              index.php, index.html
+  autoIndex               0
+  autoIndexURI            /_autoindex/default.php
+}
+
+errorpage 404 {
+  url                     /error404.html
+}
+
+expires  {
+  enableExpires           1
+}
+
+accessControl  {
+  allow                   *
+}
+
+realm SampleProtectedArea {
+
+  userDB  {
+    location              conf/vhosts/$VH_NAME/htpasswd
+    maxCacheSize          200
+    cacheTimeout          60
+  }
+
+  groupDB  {
+    location              conf/vhosts/$VH_NAME/htgroup
+    maxCacheSize          200
+    cacheTimeout          60
+  }
+}
+
+context / {
+  location                $DOC_ROOT/
+  allowBrowse             1
+
+  rewrite  {
+RewriteFile .htaccess
+  }
+}
+
+context /docs/ {
+  location                $SERVER_ROOT/docs/
+  allowBrowse             1
+}
+
+context /protected/ {
+  location                protected/
+  allowBrowse             1
+  realm                   SampleProtectedArea
+  authName                Protected
+  required                user test
+
+  accessControl  {
+    allow                 *
+  }
+}
+
+context /blocked/ {
+  allowBrowse             0
+}
+
+context /cgi-bin/ {
+  type                    cgi
+  location                $VH_ROOT/cgi-bin/
+}
+
+rewrite  {
+  enable                  0
+  logLevel                0
+}
+
+@
+
+
+1.1
+log
+@Update
+@
+text
+@d1 2
+a2 2
+docRoot $VH_ROOT/html/
+enableGzip 1
+d4 5
+d10 5
+a14 6
+context / {
+  allowBrowse 1
+  location $DOC_ROOT/
+  rewrite  {
+    RewriteFile .htaccess
+  }
+d17 5
+a21 3
+context /docs/{
+  allowBrowse 1
+  location $SERVER_ROOT/docs/
+d24 2
+a25 11
+context /protected/{
+  required user test
+  authName Protected
+  allowBrowse 1
+  location protected/
+  realm SampleProtectedArea
+
+  accessControl {
+    deny 
+    allow *
+  }
+d28 2
+a29 2
+context /blocked/{
+  allowBrowse 0
+d32 2
+a33 4
+context /cgi-bin/{
+  allowBrowse 1
+  location $VH_ROOT/cgi-bin/
+  type cgi
+d36 7
+a42 3
+expires {
+  enableExpires 1
+}
+d44 5
+a48 5
+index {
+  autoIndexURI /_autoindex/default.php
+  indexFiles index.html
+  autoIndex 0
+  useServer 0
+d51 3
+a53 3
+errorPage 404{
+  url /error404.html
+}
+d55 3
+a57 4
+errorlog $VH_ROOT/logs/error.log{
+  logLevel DEBUG
+  rollingSize 10M
+  useServer 1
+d60 3
+a62 7
+accessLog $VH_ROOT/logs/access.log{
+  compressArchive 0
+  logReferer 1
+  keepDays 30
+  rollingSize 10M
+  logUserAgent 1
+  useServer 0
+d65 6
+a70 9
+awstats {
+  updateInterval 86400
+  workingDir $VH_ROOT/awstats
+  updateOffset 0
+  siteDomain localhost
+  siteAliases 127.0.0.1 localhost
+  updateMode 0
+  awstatsURI /awstats/
+}
+d72 3
+a74 3
+rewrite {
+  enable 0
+  logLevel 0
+d77 2
+a78 6
+hotlinkCtrl {
+  suffixes gif,  jpeg,  jpg
+  allowedHosts
+  allowDirectAccess 1
+  enableHotlinkCtrl 0
+  onlySelf 1
+d81 3
+a83 3
+accessControl {
+  deny
+  allow *
+d86 3
+a88 12
+realm SampleProtectedArea {
+  userDB {
+    cacheTimeout 60
+    maxCacheSize 200
+    location conf/vhosts/$VH_NAME/htpasswd
+  }
+
+  groupDB {
+    cacheTimeout 60
+    maxCacheSize 200
+    location conf/vhosts/$VH_NAME/htgroup
+  }
+a90 3
+general {
+  enableContextAC 0
+}
+@
